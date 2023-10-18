@@ -7,15 +7,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:makeawish/Layer/Domain/CraeteActivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Layer/data/api_connection.dart';
+import '../data/CommentDetailsPage.dart';
+import '../data/CommentPage.dart';
+import '../data/api_connection.dart';
 import '../utils/colors.dart';
 import '../widgets/ActionButton.dart';
 import '../widgets/CommentWidget.dart';
 import '../widgets/ReuseableText.dart';
-import 'CommentDetailsPage.dart';
-import 'CommentPage.dart';
 import 'Gotogate.dart';
 
 class PlaceDetailsPage extends StatefulWidget {
@@ -230,6 +231,24 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                 ),
               ),
             ),
+            SizedBox(height: 8),
+            Container(
+              width: 350.0,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.to(CreateActivity(
+                    userId: userId,
+                    placeId: widget.placeData['place_id'],
+                  ));
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: AppColors.mainColor,
+                ),
+                child: Text('เพิ่มกิจกรรม',style: TextStyle(
+                  color: Colors.black
+                ),),
+              ),
+            ),
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -273,7 +292,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                           children: [
                             Icon(Icons.star, color: AppColors.mainColor),
                             SizedBox(width: 8),
-                            // Text(placeData['rating'].toString()),
+                            Text(double.parse(widget.placeData['average_rating'] ?? '0') <= 0 ? widget.placeData['average_rating'] ?? '0' : '0')
                           ],
                         ),
                       ],

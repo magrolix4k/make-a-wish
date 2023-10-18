@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Layer/data/api_connection.dart';
 import '../utils/colors.dart';
+import 'api_connection.dart';
 
 class CommentPage extends StatefulWidget {
   final String? currentUsername;
@@ -81,14 +81,12 @@ class _CommentPageState extends State<CommentPage> {
         var res = jsonDecode(response.body);
         if (response.statusCode == 200) {
           if (res['success'] == true) {
-            final snackBar = SnackBar(content: Text('สมัครสมาชิกสำเร็จ'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            print('Success');
             Future.delayed(Duration(milliseconds: 1000), () {
               Navigator.pop(context);
             });
           } else {
-            final snackBar = SnackBar(content: Text('สมัครสมาชิกไม่สำเร็จ'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            print('Not Success');
           }
         }
       }

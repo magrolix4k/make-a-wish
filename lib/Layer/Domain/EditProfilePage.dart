@@ -9,10 +9,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Layer/data/api_connection.dart';
+import '../data/api_connection.dart';
 import '../utils/colors.dart';
 import '../widgets/ReuseableText.dart';
-import 'ProfilePage.dart';
+import '../Presentation/ProfilePage.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String? currentUsername;

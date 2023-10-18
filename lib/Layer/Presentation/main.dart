@@ -3,11 +3,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../page/FavoritePage.dart';
-import '../page/ProfilePage.dart';
-import '../page/home/SecondPage.dart';
+import 'ProfilePage.dart';
 import '../user/login.dart';
 import '../utils/colors.dart';
+import 'FavoritePage.dart';
+import 'SearchPage.dart';
+import 'ActivityPage.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,9 +39,9 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isLoggedIn = false;
 
   final List<Widget> _pages = [
-    SecondPage(),
+    FirstPage(),
     FavoritesPage(),
-    SecondPage(),
+    ActivityPage(),
     ProfilePage(),
   ];
 

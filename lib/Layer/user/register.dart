@@ -6,10 +6,10 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:makeawish/user/login.dart';
-import 'package:makeawish/utils/colors.dart';
 
-import '../Layer/data/api_connection.dart';
+import '../data/api_connection.dart';
+import '../utils/colors.dart';
+import 'login.dart';
 
 class SignupPage extends StatefulWidget {
   @override

@@ -4,47 +4,47 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../utils/colors.dart';
-import '../../widgets/ReuseableText.dart';
-import '../PlaceDetailsPage.dart';
-import 'dashboard.dart';
+import '../Domain/PlaceDetailsPage.dart';
+import '../Domain/PlaceListview.dart';
+import '../utils/colors.dart';
+import '../widgets/ReuseableText.dart';
 
-class SecondPage extends StatefulWidget {
-  const SecondPage({Key? key}) : super(key: key);
+
+class FirstPage extends StatefulWidget {
+  const FirstPage({Key? key}) : super(key: key);
 
   @override
-  _SecondPageState createState() => _SecondPageState();
+  _FirstPageState createState() => _FirstPageState();
 }
 
-class _SecondPageState extends State<SecondPage> {
+class _FirstPageState extends State<FirstPage> {
   TextEditingController searchController = TextEditingController();
   List<dynamic> searchResults = [];
   bool isSearching = false;
-  String? selectedDropdownValue;
-  List<String> supportData = [];
+  String? username;
 
-  Future<void> fetchSupportData() async {
-    final response = await http.get(
-      Uri.parse('https://makeawish.comsciproject.net/scifoxz/placeData.php'),
-    );
+  late String _selectedWatName;
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        supportData =
-            data.map((item) => item['place_support']).cast<String>().toList();
-        print(supportData);
-      });
-    } else {
-      throw Exception('Failed to load data from API');
-    }
-  }
+  List<String> _watNames = ['วัด1', 'วัด2', 'วัด3'];
+
 
   @override
   void initState() {
     super.initState();
-    fetchSupportData();
+    getUsername();
+    _selectedWatName = _watNames.first;
+  }
+
+  void getUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedUsername = prefs.getString('username');
+    if (savedUsername != null) {
+      setState(() {
+        username = savedUsername;
+      });
+    }
   }
 
   void fetchData(String query) async {
@@ -82,6 +82,8 @@ class _SecondPageState extends State<SecondPage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    double screenHight = MediaQuery.of(context).size.height;
+
 
     return Scaffold(
       body: Column(
@@ -96,7 +98,7 @@ class _SecondPageState extends State<SecondPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ReusableText(
-                      text: "หัวข้อที่สนใจ",
+                      text: "สวัสดีคุณ $username",
                       color: AppColors.mainColor,
                       size: screenWidth * 0.06,
                       alignment: Alignment.center,
@@ -104,22 +106,52 @@ class _SecondPageState extends State<SecondPage> {
                     Row(
                       children: [
                         DropdownButton<String>(
-                          value: selectedDropdownValue,
-                          icon: Icon(Icons.arrow_drop_down_rounded),
-                          items: supportData.map((String item) {
-                            return DropdownMenuItem<String>(
-                              value: item,
-                              child: Text(item),
+                          value: _selectedWatName,
+                          items: _watNames.map((String watName) {
+                            return DropdownMenuItem(
+                              value: watName,
+                              child: Text(watName),
                             );
                           }).toList(),
-                          onChanged: (selectedValue) {
+                          onChanged: (selectedWat) {
                             setState(() {
-                              selectedDropdownValue = selectedValue;
+                              _selectedWatName = selectedWat!;
+                            });
+                          },
+                        ),
+                        SizedBox(width: 50.0),
+                        DropdownButton<String>(
+                          value: _selectedWatName,
+                          items: _watNames.map((String watName) {
+                            return DropdownMenuItem(
+                              value: watName,
+                              child: Text(watName),
+                            );
+                          }).toList(),
+                          onChanged: (selectedWat) {
+                            setState(() {
+                              _selectedWatName = selectedWat!;
+                            });
+                          },
+                        ),
+                        SizedBox(width: 70.0),
+                        DropdownButton<String>(
+                          value: _selectedWatName,
+                          items: _watNames.map((String watName) {
+                            return DropdownMenuItem(
+                              value: watName,
+                              child: Text(watName),
+                            );
+                          }).toList(),
+                          onChanged: (selectedWat) {
+                            setState(() {
+                              _selectedWatName = selectedWat!;
                             });
                           },
                         ),
                       ],
                     ),
+
                   ],
                 ),
                 Center(
@@ -188,7 +220,7 @@ class _SecondPageState extends State<SecondPage> {
         itemCount: searchResults.length,
         itemBuilder: (context, index) {
           Uint8List imageBytes =
-              base64Decode(searchResults[index]['place_image']);
+          base64Decode(searchResults[index]['place_image']);
           return GestureDetector(
             onTap: () {
               _navigateToPlaceDetails(context, searchResults[index]);
@@ -256,7 +288,7 @@ class _SecondPageState extends State<SecondPage> {
                             SizedBox(height: screenWidth * 0.02),
                             ReusableText(
                               text:
-                                  'จ.' + searchResults[index]['place_province'],
+                              'จ.' + searchResults[index]['place_province'],
                               size: screenWidth * 0.035,
                               alignment: Alignment.center,
                             ),

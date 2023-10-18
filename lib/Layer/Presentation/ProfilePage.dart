@@ -8,11 +8,11 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Layer/data/api_connection.dart';
+import '../data/api_connection.dart';
 import '../user/login.dart';
 import '../utils/colors.dart';
 import '../widgets/ReuseableText.dart';
-import 'EditProfilePage.dart';
+import '../Domain/EditProfilePage.dart';
 
 class ProfilePage extends StatefulWidget {
   @override

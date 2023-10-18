@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
+import '../Presentation/main.dart';
 import '../user/register.dart';
 import '../utils/colors.dart';
 

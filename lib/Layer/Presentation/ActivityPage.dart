@@ -1,15 +1,20 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import '../Domain/ActivityLisview.dart';
+import '../data/api_connection.dart';
 import '../utils/colors.dart';
 import '../widgets/ReuseableText.dart';
-import 'home/FavoriteData.dart';
 
-class FavoritesPage extends StatefulWidget {
+
+class ActivityPage extends StatefulWidget {
+  const ActivityPage({Key? key}) : super(key: key);
+
   @override
-  _FavoritesPageState createState() => _FavoritesPageState();
+  _ActivityPageState createState() => _ActivityPageState();
 }
 
-class _FavoritesPageState extends State<FavoritesPage> {
+class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -27,7 +32,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ReusableText(
-                      text: "รายการโปรดของคุณ",
+                      text: "กิจกรรมของคุณ",
                       color: AppColors.mainColor,
                       size: screenWidth * 0.06,
                       alignment: Alignment.center,
@@ -47,14 +52,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
             ),
           ),
           Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.04,
-              ),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: FavoriteData(),
-              ),
+            child: SingleChildScrollView(
+              child: ActivityListview(),
             ),
           ),
         ],
