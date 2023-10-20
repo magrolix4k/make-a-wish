@@ -19,16 +19,16 @@ import '../widgets/CommentWidget.dart';
 import '../widgets/ReuseableText.dart';
 import 'Gotogate.dart';
 
-class PlaceDetailsPage extends StatefulWidget {
+class ActivityDetailsPage extends StatefulWidget {
   final Map<String, dynamic> placeData;
 
-  const PlaceDetailsPage({super.key, required this.placeData});
+  const ActivityDetailsPage({super.key, required this.placeData});
 
   @override
-  _PlaceDetailsPageState createState() => _PlaceDetailsPageState();
+  _ActivityDetailsPageState createState() => _ActivityDetailsPageState();
 }
 
-class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
+class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   String userId = '';
   List<dynamic> comments = [];
 
@@ -98,7 +98,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
           });
         } else if (res['message'] == 'Place already in favorites') {
           final snackBar =
-              SnackBar(content: Text('สถานที่นี้อยู่ในรายการโปรดอยู่แล้ว'));
+          SnackBar(content: Text('สถานที่นี้อยู่ในรายการโปรดอยู่แล้ว'));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }
@@ -184,7 +184,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                       width: screenWidth * 0.1,
                       height: screenWidth * 0.1,
                       child:
-                          Icon(Icons.keyboard_arrow_left, color: Colors.white),
+                      Icon(Icons.keyboard_arrow_left, color: Colors.white),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(screenWidth * 0.03),
                         color: AppColors.mainColor,
@@ -254,7 +254,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                   primary: AppColors.mainColor,
                 ),
                 child: Text('เพิ่มกิจกรรม',style: TextStyle(
-                  color: Colors.black
+                    color: Colors.black
                 ),),
               ),
             ),
@@ -263,7 +263,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
               children: [
                 Card(
                   margin:
-                      EdgeInsets.only(right: 16, left: 16, bottom: 10, top: 16),
+                  EdgeInsets.only(right: 16, left: 16, bottom: 10, top: 16),
                   child: Padding(
                     padding: EdgeInsets.all(16),
                     child: Column(
@@ -313,7 +313,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
 
                 Card(
                   margin:
-                      EdgeInsets.only(right: 16, left: 16, bottom: 1, top: 1),
+                  EdgeInsets.only(right: 16, left: 16, bottom: 1, top: 1),
                   child: Padding(
                     padding: EdgeInsets.all(16),
                     child: Column(
@@ -327,7 +327,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                             ),
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
+                              const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 'วิธีการไหว้',
                                 style: TextStyle(
@@ -355,7 +355,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                             ),
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
+                              const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 'ข้อมูลเพิ่มเติม',
                                 style: TextStyle(
@@ -384,7 +384,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                             ),
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
+                              const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 'การรีวิว',
                                 style: TextStyle(
@@ -416,7 +416,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                                   userAvatar: comment['comment_profile'],
                                   userName: comment['comment_username'],
                                   userRating:
-                                      int.parse(comment['comment_rating']),
+                                  int.parse(comment['comment_rating']),
                                   commentText: comment['comment_comment'],
                                   commentTime: DateFormat('HH:mm:ss dd-MM-yyyy')
                                       .format(dateTime),

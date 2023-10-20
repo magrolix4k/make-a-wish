@@ -3,12 +3,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'ProfilePage.dart';
-import '../user/login.dart';
-import '../utils/colors.dart';
-import 'FavoritePage.dart';
-import 'SearchPage.dart';
-import 'ActivityPage.dart';
+import 'Layer/Presentation/ProfilePage.dart';
+import 'Layer/user/login.dart';
+import 'Layer/utils/colors.dart';
+import 'Layer/Presentation/FavoritePage.dart';
+import 'Layer/Presentation/SearchPage.dart';
+import 'Layer/Presentation/ActivityPage.dart';
 
 
 void main() async {

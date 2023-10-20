@@ -9,10 +9,9 @@ class CommentWidget extends StatelessWidget {
   final String commentText;
   final String commentTime;
   final String image;
-  final bool isUserComment; // ประกาศตัวแปร isUserComment ในพารามิเตอร์
-  final Function() onEditComment; // ประกาศตัวแปร onEditComment ในพารามิเตอร์
-  final Function()
-      onDeleteComment; // ประกาศตัวแปร onDeleteComment ในพารามิเตอร์
+  final bool isUserComment;
+  final Function() onEditComment;
+  final Function() onDeleteComment;
 
   CommentWidget({
     required this.userAvatar,

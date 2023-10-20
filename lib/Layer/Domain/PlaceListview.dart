@@ -55,7 +55,6 @@ class _DashboardPageState extends State<DashboardPage> {
       fetchDataFromComments();
     }
   }
-
   Future<void> fetchDataFromDatabase() async {
     try {
       final url = Uri.parse(API.hostPlaceData);
@@ -65,6 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
         setState(() {
           dataFromDatabase = responseData;
         });
+        saveDataToSharedPreferences(dataFromDatabase);
         updateDataWithAverageRatings();
       } else {
         print('ไม่สามารถดึงข้อมูลได้ รหัสสถานะ: ${response.statusCode}');
@@ -74,6 +74,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+
   Future<void> fetchDataFromComments() async {
     final url = Uri.parse(API.hostCommentData);
     final response = await http.get(url);
@@ -82,8 +83,7 @@ class _DashboardPageState extends State<DashboardPage> {
       comments = jsonDecode(response.body);
       updateDataWithAverageRatings();
     } else {
-      print(
-          'ไม่สามารถดึงข้อมูลความคิดเห็นได้ รหัสสถานะ: ${response.statusCode}');
+      print('ไม่สามารถดึงข้อมูลความคิดเห็นได้ รหัสสถานะ: ${response.statusCode}');
     }
   }
 
@@ -91,11 +91,13 @@ class _DashboardPageState extends State<DashboardPage> {
     for (var item in dataFromPreferences) {
       final String placeId = item['place_id'];
       final double averageRating = calculateAverageRating(placeId);
-
       item['average_rating'] = averageRating;
     }
-
-    setState(() {});
+  }
+  Future<void> saveDataToSharedPreferences(List<dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonData = jsonEncode(data);
+    await prefs.setString('dashboard_data', jsonData);
   }
 
   double calculateAverageRating(String placeId) {
