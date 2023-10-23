@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:core';
 import 'dart:typed_data';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,7 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:makeawish/Layer/Domain/ActivityCreate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Presentation/SearchPage.dart';
+import 'package:share_plus/share_plus.dart';
 import 'CommentDetailsPage.dart';
 import 'CommentPage.dart';
 import '../data/api_connection.dart';
@@ -192,6 +194,16 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
         ),
       );
     }
+  }
+  void _shareContent() async {
+    final String text = widget.placeData['place_detail'];
+    final Uint8List imageBytes = base64Decode(widget.placeData['place_image']);
+
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = File('${tempDir.path}/temp_image.png');
+    await tempFile.writeAsBytes(imageBytes);
+
+    Share.shareFiles([tempFile.path], text: text+'#makeawish',);
   }
 
   @override
@@ -515,7 +527,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                       ActionButton(
                         icon: Icons.share,
                         label: 'แชร์',
-                        onPressed: () {},
+                        onPressed: () {
+                          _shareContent();
+                        },
                       ),
                       ActionButton(
                         icon: Icons.directions,

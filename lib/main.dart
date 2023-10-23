@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'Layer/Domain/Login.dart';
 import 'Layer/Presentation/ProfilePage.dart';
@@ -11,9 +12,9 @@ import 'Layer/Presentation/SearchPage.dart';
 import 'Layer/Presentation/ActivityPage.dart';
 
 
-void main() async {
+Future<void> main() async {
+  await initializeDateFormatting('th', null);
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(MyApp());
 }
 

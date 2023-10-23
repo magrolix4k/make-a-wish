@@ -46,7 +46,8 @@ class _SignupPageState extends State<SignupPage> {
             Get.to(LoginPage());
           });
         } else {
-          final snackBar = SnackBar(content: Text('สมัครสมาชิกไม่สำเร็จ'));
+          final message = res['message'];
+          final snackBar = SnackBar(content: Text('มี Username นี้อยู่แล้ว'));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }

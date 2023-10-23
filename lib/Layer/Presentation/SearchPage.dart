@@ -25,16 +25,10 @@ class _FirstPageState extends State<FirstPage> {
   bool isSearching = false;
   String? username;
 
-  late String _selectedWatName;
-
-  List<String> _watNames = ['วัด1', 'วัด2', 'วัด3'];
-
-
   @override
   void initState() {
     super.initState();
     getUsername();
-    _selectedWatName = _watNames.first;
   }
 
   void getUsername() async {

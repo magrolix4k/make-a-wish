@@ -21,9 +21,9 @@ class _DashboardPageState extends State<DashboardPage> {
   List<dynamic> dataFromDatabase = [];
   List<dynamic> dataFromPreferences = [];
   List<dynamic> comments = [];
-  String selectedNameHoly = 'หมวดหมู่';
-  String selectedProvince = 'หมวดหมู่';
-  String selectedSupport = 'หมวดหมู่';
+  String selectedNameHoly = 'เทพทั้งหมด';
+  String selectedProvince = 'จังหวัดทั้งหมด';
+  String selectedSupport = 'หมวดหมู่ทั้งหมด';
   List<dynamic> initialDataFromPreferences = [];
 
   String? username;
@@ -119,8 +119,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
 
   double calculateAverageRating(String placeId) {
-    final ratingsForPlace =
-    comments.where((comment) => comment['place_id'] == placeId);
+    final ratingsForPlace = comments.where((comment) => comment['place_id'] == placeId);
 
     if (ratingsForPlace.isEmpty) {
       return 0.0;
@@ -134,20 +133,27 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void filterData() {
-    if (selectedNameHoly == 'หมวดหมู่' || selectedProvince == 'หมวดหมู่' || selectedSupport == 'หมวดหมู่') {
+    if (selectedNameHoly == 'เทพทั้งหมด') {
       dataFromPreferences = List.from(initialDataFromPreferences);
     }
-    if (selectedNameHoly != 'หมวดหมู่') {
+    if (selectedProvince == 'จังหวัดทั้งหมด') {
+      dataFromPreferences = List.from(initialDataFromPreferences);
+    }
+    if (selectedSupport == 'หมวดหมู่ทั้งหมด') {
+      dataFromPreferences = List.from(initialDataFromPreferences);
+    }
+
+    if (selectedNameHoly != 'เทพทั้งหมด') {
       dataFromPreferences =
           dataFromPreferences.where((item) => item['place_nameHoly'] ==
               selectedNameHoly).toList();
     }
-    if (selectedProvince != 'หมวดหมู่') {
+    if (selectedProvince != 'จังหวัดทั้งหมด') {
       dataFromPreferences =
           dataFromPreferences.where((item) => item['place_province'] ==
               selectedProvince).toList();
     }
-    if (selectedSupport != 'หมวดหมู่') {
+    if (selectedSupport != 'หมวดหมู่ทั้งหมด') {
       dataFromPreferences =
           dataFromPreferences.where((item) => item['place_support'] ==
               selectedSupport).toList();
@@ -273,28 +279,25 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     List<String> uniqueNameHoly = dataFromPreferences
         .map((item) => "${item['place_nameHoly']}")
         .toSet()
         .toList();
-    uniqueNameHoly.insert(0, 'หมวดหมู่');
+    uniqueNameHoly.insert(0, 'เทพทั้งหมด');
 
     List<String> uniqueProvince = dataFromPreferences
         .map((item) => "${item['place_province']}")
         .toSet()
         .toList();
-    uniqueProvince.insert(0, 'หมวดหมู่');
+    uniqueProvince.insert(0, 'จังหวัดทั้งหมด');
 
     List<String> uniqueSupport = dataFromPreferences
         .map((item) => "${item['place_support']}")
         .toSet()
         .toList();
-    uniqueSupport.insert(0, 'หมวดหมู่');
+    uniqueSupport.insert(0, 'หมวดหมู่ทั้งหมด');
 
     return SingleChildScrollView(
       child: Column(

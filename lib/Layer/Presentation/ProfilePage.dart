@@ -46,6 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+
   Future<void> fetchUserData() async {
     final response = await http.post(
       Uri.parse(API.hostUserdata),
@@ -61,9 +62,17 @@ class _ProfilePageState extends State<ProfilePage> {
         id_username = parsedData['user_id'];
         s_username = parsedData['username'];
         rawBirthday = parsedData['birthday'];
+
+        String formatBuddhistDate(DateTime date) {
+          final thaiLocale = 'th';
+          final thaiMonthDayFormat = DateFormat.MMMMd(thaiLocale);
+          final formattedMonthDay = thaiMonthDayFormat.format(date);
+          final buddhistYear = date.year + 543;
+          return '$formattedMonthDay $buddhistYear';
+        }
         if (rawBirthday != null) {
-          DateTime parsedDate = DateTime.parse(rawBirthday!);
-          s_birthday = DateFormat('dd MMM yyyy').format(parsedDate);
+          final parsedDate = DateTime.parse(rawBirthday!);
+          s_birthday = formatBuddhistDate(parsedDate);
         }
         imageBase64 = parsedData['image'];
         if (imageBase64 != null) {

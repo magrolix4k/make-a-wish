@@ -226,13 +226,13 @@ class CommentWidget extends StatelessWidget {
   }
 
 
-  Future<void> _sendEditCommentRequest(String commentids, String newCommentText, String newImage,String _imagename, double newUserRating) async {
+  Future<void> _sendEditCommentRequest(String commentids, String newCommentText, String newImage, String _imagename, double newUserRating) async {
     try {
       final url = Uri.parse('https://makeawish.comsciproject.net/scifoxz/_editComment.php');
       DateTime currentTime = DateTime.now();
       String timestamp = currentTime.toIso8601String();
 
-      var response = await http.post(url, body: {
+      final response = await http.post(url, body: {
         'comment_id' : commentids,
         'comment_text': newCommentText,
         'comment_timestamp': timestamp,
@@ -240,13 +240,12 @@ class CommentWidget extends StatelessWidget {
         'imageName' : _imagename,
         'comment_rating': newUserRating.toString(),
       });
-
-      print('comment_id' + commentids);
-      print('comment_text' + newCommentText);
-      print('comment_timestamp' + timestamp);
-      print('imageName' + _imagename);
-      print('imageName' + newImage);
-      print('comment_rating' + newUserRating.toString());
+      print('comment_id ' + commentids);
+      print('comment_text ' + newCommentText);
+      print('comment_timestamp ' + timestamp);
+      print('imageName ' + _imagename);
+      print('imageName ' + newImage);
+      print('comment_rating ' + newUserRating.toString());
 
       var res = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -255,10 +254,10 @@ class CommentWidget extends StatelessWidget {
         } else {
           print('Not Success');
         }
-      }else{
-        print('Cant Connect');
+      } else {
+        print('Failed to edit comment');
       }
-    }catch (e) {
+    } catch (e) {
       print("Exception: $e");
     }
   }
