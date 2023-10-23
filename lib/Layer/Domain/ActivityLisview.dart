@@ -200,7 +200,7 @@ class _ActivityListviewState extends State<ActivityListview> {
       builder: (context) {
         return AlertDialog(
           title: Text('ยืนยันการลบ'),
-          content: Text('คุณแน่ใจหรือไม่ที่ต้องการลบความคิดเห็นนี้?'),
+          content: Text('คุณแน่ใจหรือไม่ที่ต้องการลบกิจกรรมนี้?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {

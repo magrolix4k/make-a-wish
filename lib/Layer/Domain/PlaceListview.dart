@@ -33,14 +33,32 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    getUsername();
-    fetchDataFromDatabase();
-    updateDataWithAverageRatings();
-    fetchDataFromComments();
     refreshData();
   }
+
   Future<void> refreshData() async {
+    if (dataFromDatabase.isEmpty) {
+      CircularProgressIndicator();
+      return Future.delayed(Duration(seconds: 1)); // Simulated loading
+    }
+
     await fetchDataFromDatabase();
+    await CachedData();
+    await getUsername();
+  }
+
+
+  Future<void> CachedData() async{
+    final prefs = await SharedPreferences.getInstance();
+    final jsonData = prefs.getString('dashboard_data');
+    if (jsonData != null) {
+      final List<dynamic> cachedData = jsonDecode(jsonData);
+      setState(() {
+        dataFromPreferences = cachedData;
+        initialDataFromPreferences = List.from(dataFromPreferences);
+        updateDataWithAverageRatings();
+      });
+    }
   }
 
   Future<void> getUsername() async {
@@ -98,8 +116,7 @@ class _DashboardPageState extends State<DashboardPage> {
         updateDataWithAverageRatings();
       });
     } else {
-      print(
-          'ไม่สามารถดึงข้อมูลความคิดเห็นได้ รหัสสถานะ: ${response.statusCode}');
+      print('ไม่สามารถดึงข้อมูลความคิดเห็นได้ รหัสสถานะ: ${response.statusCode}');
     }
   }
   Future<void> saveDataToSharedPreferences(List<dynamic> data) async {
@@ -116,7 +133,6 @@ class _DashboardPageState extends State<DashboardPage> {
       });
     }
   }
-
 
   double calculateAverageRating(String placeId) {
     final ratingsForPlace = comments.where((comment) => comment['place_id'] == placeId);
@@ -304,7 +320,7 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Row(
             children: [
-              SizedBox(width: 20.0),
+              SizedBox(width: 15),
               Material(
                 child: DropdownButton<String>(
                   value: selectedNameHoly,
@@ -319,8 +335,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     return DropdownMenuItem<String>(
                       value: item,
                       child: SizedBox(
-                        width: 80,
-                        child: Text(item, style: TextStyle(fontSize: 15)),
+                        width: 60,
+                        child: Text(item, style: TextStyle(fontSize: 12)),
                       ),
                     );
                   }).toList(),
@@ -342,7 +358,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       value: item,
                       child: SizedBox(
                         width: 80,
-                        child: Text(item, style: TextStyle(fontSize: 15)),
+                        child: Text(item, style: TextStyle(fontSize: 12)),
                       ),
                     );
                   }).toList(),
@@ -364,7 +380,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       value: item,
                       child: SizedBox(
                         width: 80,
-                        child: Text(item, style: TextStyle(fontSize: 15)),
+                        child: Text(item, style: TextStyle(fontSize: 12)),
                       ),
                     );
                   }).toList(),
@@ -378,6 +394,7 @@ class _DashboardPageState extends State<DashboardPage> {
             itemCount: dataFromPreferences.length,
             itemBuilder: (context, index) {
               Map<String, dynamic> item = dataFromPreferences[index];
+              print(item.length);
               return buildPlaceItem(item, screenWidth);
             },
           ),

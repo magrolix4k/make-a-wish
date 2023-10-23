@@ -99,12 +99,6 @@ class CommentWidget extends StatelessWidget {
                   _editComment(context);
                 },
               ),
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  _showDeleteConfirmationDialog(context);
-                },
-              )
             ],
           ),
           SizedBox(height: 10),
@@ -114,30 +108,6 @@ class CommentWidget extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _showDeleteConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('ยืนยันการลบ'),
-          content: Text('คุณแน่ใจหรือไม่ที่ต้องการลบความคิดเห็นนี้?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // ปิด dialog
-              },
-              child: Text('ยกเลิก'),
-            ),
-            TextButton(
-              onPressed: onDeleteComment,
-              child: Text('ลบ'),
-            ),
-          ],
-        );
-      },
     );
   }
   void _editComment(BuildContext context) {

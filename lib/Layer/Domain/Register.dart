@@ -21,6 +21,7 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _birthdateController = TextEditingController();
+  TextEditingController _birthdateControllers = TextEditingController();
 
   File? _imagepath;
   String? _imagename;
@@ -77,14 +78,22 @@ class _SignupPageState extends State<SignupPage> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-
     if (pickedDate != null) {
       String formattedDate = DateFormat('yyyy/MM/dd').format(pickedDate);
+
+      String day = DateFormat('dd').format(pickedDate);
+      String month = DateFormat('MM').format(pickedDate);
+      String yearBE = (int.parse(DateFormat('y').format(pickedDate)) + 543).toString();
+      String formattedDates = '$day/$month/$yearBE';
+
       setState(() {
         _birthdateController.text = formattedDate;
+        _birthdateControllers.text = formattedDates;
       });
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +146,7 @@ class _SignupPageState extends State<SignupPage> {
                         SizedBox(height: 16.0),
                         TextFormField(
                           controller: _usernameController,
-                          decoration: InputDecoration(labelText: 'อีเมล'),
+                          decoration: InputDecoration(labelText: 'ชื่อผู้ใช้'),
                         ),
                         SizedBox(height: 16.0),
                         TextFormField(
@@ -159,8 +168,8 @@ class _SignupPageState extends State<SignupPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  _birthdateController.text.isNotEmpty
-                                      ? _birthdateController.text
+                                  _birthdateControllers.text.isNotEmpty
+                                      ? _birthdateControllers.text
                                       : 'เลือกวันเกิด',
                                   style: TextStyle(
                                       color:

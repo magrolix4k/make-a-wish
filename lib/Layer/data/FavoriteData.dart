@@ -101,6 +101,10 @@ class _FavoriteDataState extends State<FavoriteData> {
     final double imageSize = screenWidth * 0.25;
     Uint8List imageBytes = base64Decode(item['place_image']);
 
+    double rating = item['average_rating'] ?? 0.0;
+    String formattedRating = rating.toStringAsFixed(1);
+    print(formattedRating);
+
     return GestureDetector(
       onTap: () {
         _navigateToPlaceDetails(context, item);
@@ -216,7 +220,7 @@ class _FavoriteDataState extends State<FavoriteData> {
       builder: (context) {
         return AlertDialog(
           title: Text('ยืนยันการลบ'),
-          content: Text('คุณแน่ใจหรือไม่ที่ต้องการลบความคิดเห็นนี้?'),
+          content: Text('คุณแน่ใจหรือไม่ที่ต้องการลบรายการโปรดนี้?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {

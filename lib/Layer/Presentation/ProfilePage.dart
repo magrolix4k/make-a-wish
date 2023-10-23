@@ -167,15 +167,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         : const CircularProgressIndicator(),
                   ),
                   SizedBox(height: screenWidth * 0.04),
-                  Text(
-                    '$id_username',
-                    style: TextStyle(
-                        fontSize: screenWidth * 0.05,
-                        fontWeight: FontWeight.bold),
-                  ),
                   SizedBox(height: screenWidth * 0.04),
                   Text(
-                    'ชื่อผู้ใช้: $s_username',
+                    '$s_username',
                     style: TextStyle(
                         fontSize: screenWidth * 0.05,
                         fontWeight: FontWeight.bold),
@@ -228,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 _handleLogout(context);
               },
-              child: Text('ลบ'),
+              child: Text('ตกลง'),
             ),
           ],
         );

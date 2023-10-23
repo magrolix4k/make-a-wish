@@ -58,16 +58,9 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                       ReusableText(
                         text: widget.ActivityData['place_name'],
                         color: AppColors.mainColor,
-                        size: screenWidth * 0.04,
+                        size: screenWidth * 0.06,
                         alignment: Alignment.center,
                       ),
-                      Row(
-                        children: [
-                          reusableText(
-                              text: widget.ActivityData['activity_id'],
-                              color: Colors.black54)
-                        ],
-                      )
                     ],
                   ),
                   GestureDetector(

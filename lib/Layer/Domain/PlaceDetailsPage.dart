@@ -13,6 +13,7 @@ import 'package:makeawish/Layer/Domain/ActivityCreate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:share_plus/share_plus.dart';
+import '../../main.dart';
 import 'CommentDetailsPage.dart';
 import 'CommentPage.dart';
 import '../data/api_connection.dart';
@@ -212,8 +213,11 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     const double largeScreenWidth = 600;
     Uint8List imageBytes = base64Decode(widget.placeData['place_image']);
 
-    double rating = widget.placeData['average_rating'];
+    double rating = widget.placeData['average_rating'] != null
+        ? (widget.placeData['average_rating'] as num).toDouble()
+        : 0.0;
     String formattedRating = rating.toStringAsFixed(1);
+    print(formattedRating);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -227,7 +231,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      Future.delayed(const Duration(milliseconds: 1000), () {
+                        Get.to(MyHomePage());
+                      });
                     },
                     child: Container(
                       width: screenWidth * 0.1,
@@ -243,18 +249,11 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                   Column(
                     children: [
                       ReusableText(
-                        text: widget.placeData['place_province'],
+                        text: widget.placeData['place_name'],
                         color: AppColors.mainColor,
-                        size: screenWidth * 0.04,
+                        size: screenWidth * 0.06,
                         alignment: Alignment.center,
                       ),
-                      Row(
-                        children: [
-                          reusableText(
-                              text: widget.placeData['place_id'],
-                              color: Colors.black54)
-                        ],
-                      )
                     ],
                   ),
                   GestureDetector(
@@ -381,6 +380,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                                 'วิธีการไหว้',
                                 style: TextStyle(
                                   fontSize: 16,
+                                  fontWeight: FontWeight.bold
                                 ),
                               ),
                             ),
@@ -408,7 +408,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                               child: Text(
                                 'ข้อมูลเพิ่มเติม',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 16, fontWeight: FontWeight.bold
+
                                 ),
                               ),
                             ),
@@ -438,6 +439,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                                 'การรีวิว',
                                 style: TextStyle(
                                   fontSize: 16,
+                                    fontWeight: FontWeight.bold
+
                                 ),
                               ),
                             ),
@@ -548,22 +551,11 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
       ),
     );
   }
-
-  void _navigateToPlaceDetails(
-      BuildContext context, Map<String, dynamic> comments) {
-    Get.to(
-      CommentDetailsPage(
-        comment: comments,
-        context: context,
-      ),
-    );
-  }
-
   void _navigateToGPS(BuildContext context) {
     Get.to(
       GotoGate(
         placeId: widget.placeData['place_id'],
-        placeProvince: widget.placeData['place_province'],
+        placeProvince: widget.placeData['place_name'],
         placeLatitude: widget.placeData['place_latitude'],
         placeLongitude: widget.placeData['place_longitude'],
       ),

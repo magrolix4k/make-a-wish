@@ -32,15 +32,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       size: screenWidth * 0.06,
                       alignment: Alignment.center,
                     ),
-                    Row(
-                      children: [
-                        reusableText(
-                          text: "ที่ได้เลือก",
-                          color: Colors.black54,
-                        ),
-                        Icon(Icons.arrow_drop_down_rounded)
-                      ],
-                    )
                   ],
                 ),
               ],
