@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../Domain/FavoriteData.dart';
-import '../utils/colors.dart';
+import '../data/FavoriteData.dart';
+import '../widgets/colors.dart';
 import '../widgets/ReuseableText.dart';
 
 class FavoritesPage extends StatefulWidget {

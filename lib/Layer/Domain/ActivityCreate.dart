@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import '../utils/colors.dart';
+import '../widgets/colors.dart';
 import '../widgets/ReuseableText.dart';
 
 class CreateActivity extends StatefulWidget {

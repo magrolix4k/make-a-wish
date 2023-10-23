@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/ReuseableText.dart';
 import 'ActivityDetailsPage.dart';
@@ -24,7 +23,27 @@ class _ActivityListviewState extends State<ActivityListview> {
     super.initState();
     fetchDataFromDatabase();
   }
+  Future<void> deleteActivity(int activityId) async {
+    try {
+      final url = Uri.parse('https://makeawish.comsciproject.net/scifoxz/_deleteActivity.php');
+      final response = await http.post(url, body: {'activity_id': activityId.toString()});
 
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+        if (responseJson['success']) {
+          fetchDataFromDatabase();
+          print('ลบสำเร็จ: ${response.statusCode}');
+        } else {
+
+        }
+      } else {
+        print('ไม่สามารถลบข้อมูลได้ รหัสสถานะ: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('เกิดข้อผิดพลาดขณะลบข้อมูล: $error');
+    }
+  }
 
   Future<void> fetchDataFromDatabase() async {
     try {
@@ -45,9 +64,9 @@ class _ActivityListviewState extends State<ActivityListview> {
 
   void _navigateToActivityDetails(
       BuildContext context,
-      Map<String, dynamic> placeData,
+      Map<String, dynamic> ActivityData,
       ) {
-    Get.to(ActivityDetailsPage(placeData: placeData));
+    Get.to(ActivityDetailsPage(ActivityData: ActivityData));
   }
 
   Widget buildActivityItem(Map<String, dynamic> item, double screenWidth) {
@@ -119,14 +138,16 @@ class _ActivityListviewState extends State<ActivityListview> {
                           alignment: Alignment.center
                       ),
                       SizedBox(height: screenWidth * 0.02),
+                      ReusableText(
+                        text: item['activity_datetime'],
+                        size: screenWidth * 0.04,
+                        alignment: Alignment.center,
+                      ),
+                      SizedBox(height: screenWidth * 0.02),
+
                       Wrap(
                         children: [
-                          ReusableText(
-                            text: item['activity_datetime'],
-                            size: screenWidth * 0.04,
-                            alignment: Alignment.center,
-                          ),
-                          SizedBox(width: 16.0),
+                          SizedBox(width: 5.0),
                           Container(
                             width: 15.0,
                             height: 15.0,
@@ -146,7 +167,7 @@ class _ActivityListviewState extends State<ActivityListview> {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                // deleteFavorite(item['place_id'], userId!);
+                _showDeleteConfirmationDialog(item['activity_id']);
               },
             )
           ],
@@ -171,6 +192,33 @@ class _ActivityListviewState extends State<ActivityListview> {
           },
         ),
       ],
+    );
+  }
+  void _showDeleteConfirmationDialog(String activityId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('ยืนยันการลบ'),
+          content: Text('คุณแน่ใจหรือไม่ที่ต้องการลบความคิดเห็นนี้?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Send a DELETE request to delete the item
+                deleteActivity(int.parse(activityId));
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('ลบ'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -6,9 +6,9 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/api_connection.dart';
+import 'api_connection.dart';
 import '../widgets/ReuseableText.dart';
-import 'PlaceDetailsPage.dart';
+import '../Domain/PlaceDetailsPage.dart';
 
 class FavoriteData extends StatefulWidget {
   const FavoriteData({Key? key}) : super(key: key);
@@ -184,7 +184,7 @@ class _FavoriteDataState extends State<FavoriteData> {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                deleteFavorite(item['place_id'], userId!);
+                _showDeleteConfirmationDialog(item['place_id']);
               },
             )
           ],
@@ -208,6 +208,34 @@ class _FavoriteDataState extends State<FavoriteData> {
           },
         ),
       ],
+    );
+  }
+  void _showDeleteConfirmationDialog(String place_id) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('ยืนยันการลบ'),
+          content: Text('คุณแน่ใจหรือไม่ที่ต้องการลบความคิดเห็นนี้?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Send a DELETE request to delete the item
+                deleteFavorite(place_id, userId!);
+
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('ลบ'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

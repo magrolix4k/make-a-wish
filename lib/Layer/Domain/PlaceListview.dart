@@ -21,6 +21,10 @@ class _DashboardPageState extends State<DashboardPage> {
   List<dynamic> dataFromDatabase = [];
   List<dynamic> dataFromPreferences = [];
   List<dynamic> comments = [];
+  String selectedNameHoly = 'หมวดหมู่';
+  String selectedProvince = 'หมวดหมู่';
+  String selectedSupport = 'หมวดหมู่';
+  List<dynamic> initialDataFromPreferences = [];
 
   String? username;
   String? profile;
@@ -30,6 +34,13 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     getUsername();
+    fetchDataFromDatabase();
+    updateDataWithAverageRatings();
+    fetchDataFromComments();
+    refreshData();
+  }
+  Future<void> refreshData() async {
+    await fetchDataFromDatabase();
   }
 
   Future<void> getUsername() async {
@@ -48,6 +59,8 @@ class _DashboardPageState extends State<DashboardPage> {
         final List<dynamic> cachedData = jsonDecode(jsonData);
         setState(() {
           dataFromPreferences = cachedData;
+          initialDataFromPreferences = List.from(dataFromPreferences);
+          updateDataWithAverageRatings();
         });
       } else {
         fetchDataFromDatabase();
@@ -55,6 +68,7 @@ class _DashboardPageState extends State<DashboardPage> {
       fetchDataFromComments();
     }
   }
+
   Future<void> fetchDataFromDatabase() async {
     try {
       final url = Uri.parse(API.hostPlaceData);
@@ -63,9 +77,10 @@ class _DashboardPageState extends State<DashboardPage> {
         final List<dynamic> responseData = jsonDecode(response.body);
         setState(() {
           dataFromDatabase = responseData;
+          updateDataWithAverageRatings();
         });
         saveDataToSharedPreferences(dataFromDatabase);
-        updateDataWithAverageRatings();
+        filterData();
       } else {
         print('ไม่สามารถดึงข้อมูลได้ รหัสสถานะ: ${response.statusCode}');
       }
@@ -73,25 +88,18 @@ class _DashboardPageState extends State<DashboardPage> {
       print('เกิดข้อผิดพลาดขณะดึงข้อมูล: $error');
     }
   }
-
-
   Future<void> fetchDataFromComments() async {
     final url = Uri.parse(API.hostCommentData);
-    final response = await http.get(url);
+    final response = await http.post(url);
 
     if (response.statusCode == 200) {
-      comments = jsonDecode(response.body);
-      updateDataWithAverageRatings();
+      setState(() {
+        comments = jsonDecode(response.body);
+        updateDataWithAverageRatings();
+      });
     } else {
-      print('ไม่สามารถดึงข้อมูลความคิดเห็นได้ รหัสสถานะ: ${response.statusCode}');
-    }
-  }
-
-  void updateDataWithAverageRatings() {
-    for (var item in dataFromPreferences) {
-      final String placeId = item['place_id'];
-      final double averageRating = calculateAverageRating(placeId);
-      item['average_rating'] = averageRating;
+      print(
+          'ไม่สามารถดึงข้อมูลความคิดเห็นได้ รหัสสถานะ: ${response.statusCode}');
     }
   }
   Future<void> saveDataToSharedPreferences(List<dynamic> data) async {
@@ -99,26 +107,55 @@ class _DashboardPageState extends State<DashboardPage> {
     final jsonData = jsonEncode(data);
     await prefs.setString('dashboard_data', jsonData);
   }
+  void updateDataWithAverageRatings() {
+    for (var item in dataFromPreferences) {
+      final String placeId = item['place_id'];
+      final double averageRating = calculateAverageRating(placeId);
+      setState(() {
+        item['average_rating'] = averageRating;
+      });
+    }
+  }
+
 
   double calculateAverageRating(String placeId) {
     final ratingsForPlace =
-        comments.where((comment) => comment['place_id'] == placeId);
+    comments.where((comment) => comment['place_id'] == placeId);
 
     if (ratingsForPlace.isEmpty) {
       return 0.0;
     }
 
     final totalRating = ratingsForPlace.fold(0, (sum, comment) {
-      final int rating =
-          int.tryParse(comment['comment_rating'].toString()) ?? 0;
+      final int rating = int.tryParse(comment['comment_rating'].toString()) ?? 0;
       return sum + rating;
     });
-
     return totalRating / ratingsForPlace.length;
   }
 
-  void _navigateToPlaceDetails(
-      BuildContext context, Map<String, dynamic> placeData) {
+  void filterData() {
+    if (selectedNameHoly == 'หมวดหมู่' || selectedProvince == 'หมวดหมู่' || selectedSupport == 'หมวดหมู่') {
+      dataFromPreferences = List.from(initialDataFromPreferences);
+    }
+    if (selectedNameHoly != 'หมวดหมู่') {
+      dataFromPreferences =
+          dataFromPreferences.where((item) => item['place_nameHoly'] ==
+              selectedNameHoly).toList();
+    }
+    if (selectedProvince != 'หมวดหมู่') {
+      dataFromPreferences =
+          dataFromPreferences.where((item) => item['place_province'] ==
+              selectedProvince).toList();
+    }
+    if (selectedSupport != 'หมวดหมู่') {
+      dataFromPreferences =
+          dataFromPreferences.where((item) => item['place_support'] ==
+              selectedSupport).toList();
+    }
+  }
+
+  void _navigateToPlaceDetails(BuildContext context,
+      Map<String, dynamic> placeData) {
     Get.to(PlaceDetailsPage(placeData: placeData));
   }
 
@@ -236,20 +273,113 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
-    return Column(
-      children: [
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: dataFromPreferences.length,
-          itemBuilder: (context, index) {
-            Map<String, dynamic> item = dataFromPreferences[index];
-            return buildPlaceItem(item, screenWidth);
-          },
-        ),
-      ],
+    List<String> uniqueNameHoly = dataFromPreferences
+        .map((item) => "${item['place_nameHoly']}")
+        .toSet()
+        .toList();
+    uniqueNameHoly.insert(0, 'หมวดหมู่');
+
+    List<String> uniqueProvince = dataFromPreferences
+        .map((item) => "${item['place_province']}")
+        .toSet()
+        .toList();
+    uniqueProvince.insert(0, 'หมวดหมู่');
+
+    List<String> uniqueSupport = dataFromPreferences
+        .map((item) => "${item['place_support']}")
+        .toSet()
+        .toList();
+    uniqueSupport.insert(0, 'หมวดหมู่');
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              SizedBox(width: 20.0),
+              Material(
+                child: DropdownButton<String>(
+                  value: selectedNameHoly,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedNameHoly = newValue!;
+                      print(selectedNameHoly);
+                    });
+                    filterData();
+                  },
+                  items: uniqueNameHoly.map((item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: SizedBox(
+                        width: 80,
+                        child: Text(item, style: TextStyle(fontSize: 15)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(width: 20.0),
+              Material(
+                child: DropdownButton<String>(
+                  value: selectedProvince,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedProvince = newValue!;
+                      print(selectedProvince);
+                    });
+                    filterData();
+                  },
+                  items: uniqueProvince.map((item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: SizedBox(
+                        width: 80,
+                        child: Text(item, style: TextStyle(fontSize: 15)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(width: 20.0),
+              Material(
+                child: DropdownButton<String>(
+                  value: selectedSupport,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedSupport = newValue!;
+                      print(selectedSupport);
+                    });
+                    filterData();
+                  },
+                  items: uniqueSupport.map((item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: SizedBox(
+                        width: 80,
+                        child: Text(item, style: TextStyle(fontSize: 15)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: dataFromPreferences.length,
+            itemBuilder: (context, index) {
+              Map<String, dynamic> item = dataFromPreferences[index];
+              return buildPlaceItem(item, screenWidth);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

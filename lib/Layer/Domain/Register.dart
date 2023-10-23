@@ -8,8 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../data/api_connection.dart';
-import '../utils/colors.dart';
-import 'login.dart';
+import '../widgets/colors.dart';
+import 'Login.dart';
 
 class SignupPage extends StatefulWidget {
   @override

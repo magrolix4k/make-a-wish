@@ -3,9 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Layer/Domain/Login.dart';
 import 'Layer/Presentation/ProfilePage.dart';
-import 'Layer/user/login.dart';
-import 'Layer/utils/colors.dart';
+import 'Layer/widgets/colors.dart';
 import 'Layer/Presentation/FavoritePage.dart';
 import 'Layer/Presentation/SearchPage.dart';
 import 'Layer/Presentation/ActivityPage.dart';

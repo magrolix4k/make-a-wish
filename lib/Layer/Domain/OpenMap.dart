@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-import '../utils/colors.dart';
+import '../widgets/colors.dart';
 import '../widgets/ReuseableText.dart';
 
 class GotoGate extends StatefulWidget {
@@ -149,7 +149,7 @@ class _GotoGateState extends State<GotoGate> {
                       child: Align(
                         child: GoogleMap(
                           markers: _marker,
-                          mapType: MapType.satellite,
+                          mapType: MapType.normal,
                           initialCameraPosition: initialCameraPosition,
                           onMapCreated: (GoogleMapController controller) {
                             _controller.complete(controller);

@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Domain/PlaceDetailsPage.dart';
 import '../Domain/PlaceListview.dart';
-import '../utils/colors.dart';
+import '../widgets/colors.dart';
 import '../widgets/ReuseableText.dart';
 
 
@@ -101,55 +101,11 @@ class _FirstPageState extends State<FirstPage> {
                       size: screenWidth * 0.06,
                       alignment: Alignment.center,
                     ),
-                    Row(
-                      children: [
-                        DropdownButton<String>(
-                          value: _selectedWatName,
-                          items: _watNames.map((String watName) {
-                            return DropdownMenuItem(
-                              value: watName,
-                              child: Text(watName),
-                            );
-                          }).toList(),
-                          onChanged: (selectedWat) {
-                            setState(() {
-                              _selectedWatName = selectedWat!;
-                            });
-                          },
-                        ),
-                        SizedBox(width: 50.0),
-                        DropdownButton<String>(
-                          value: _selectedWatName,
-                          items: _watNames.map((String watName) {
-                            return DropdownMenuItem(
-                              value: watName,
-                              child: Text(watName),
-                            );
-                          }).toList(),
-                          onChanged: (selectedWat) {
-                            setState(() {
-                              _selectedWatName = selectedWat!;
-                            });
-                          },
-                        ),
-                        SizedBox(width: 70.0),
-                        DropdownButton<String>(
-                          value: _selectedWatName,
-                          items: _watNames.map((String watName) {
-                            return DropdownMenuItem(
-                              value: watName,
-                              child: Text(watName),
-                            );
-                          }).toList(),
-                          onChanged: (selectedWat) {
-                            setState(() {
-                              _selectedWatName = selectedWat!;
-                            });
-                          },
-                        ),
-                      ],
+                    reusableText(
+                      text: "ขอให้เป็นวันที่ดีนะ 🌻",
+                      color: AppColors.mainColor,
+                      size: screenWidth * 0.04,
                     ),
-
                   ],
                 ),
                 Center(

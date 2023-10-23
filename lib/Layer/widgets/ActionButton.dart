@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/colors.dart';
+import 'colors.dart';
 
 class ActionButton extends StatelessWidget {
   final IconData icon;

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../Domain/ActivityLisview.dart';
 import '../data/api_connection.dart';
-import '../utils/colors.dart';
+import '../widgets/colors.dart';
 import '../widgets/ReuseableText.dart';
 
 
@@ -37,15 +37,6 @@ class _ActivityPageState extends State<ActivityPage> {
                       size: screenWidth * 0.06,
                       alignment: Alignment.center,
                     ),
-                    Row(
-                      children: [
-                        reusableText(
-                          text: "ที่ได้เลือก",
-                          color: Colors.black54,
-                        ),
-                        Icon(Icons.arrow_drop_down_rounded)
-                      ],
-                    )
                   ],
                 ),
               ],

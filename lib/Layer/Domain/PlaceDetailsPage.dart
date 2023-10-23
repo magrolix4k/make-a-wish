@@ -7,17 +7,18 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:makeawish/Layer/Domain/CraeteActivity.dart';
+import 'package:makeawish/Layer/Domain/ActivityCreate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/CommentDetailsPage.dart';
-import '../data/CommentPage.dart';
+import '../Presentation/SearchPage.dart';
+import 'CommentDetailsPage.dart';
+import 'CommentPage.dart';
 import '../data/api_connection.dart';
-import '../utils/colors.dart';
+import '../widgets/colors.dart';
 import '../widgets/ActionButton.dart';
 import '../widgets/CommentWidget.dart';
 import '../widgets/ReuseableText.dart';
-import 'Gotogate.dart';
+import 'OpenMap.dart';
 
 class PlaceDetailsPage extends StatefulWidget {
   final Map<String, dynamic> placeData;
@@ -43,6 +44,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
       widget.placeData['place_latitude'],
       widget.placeData['place_longitude'],
     );
+
   }
 
   Future<void> _getUserData() async {
@@ -55,11 +57,11 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   }
 
   Future<void> _fetchComments() async {
-    final response = await http.get(Uri.parse(API.hostCommentData));
+    final response = await http.post(Uri.parse(API.hostCommentData));
 
     if (response.statusCode == 200) {
       setState(() {
-        comments = json.decode(response.body);
+        comments = jsonDecode(response.body);
       });
     } else {
       throw Exception('Failed to load comments');
@@ -107,8 +109,6 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     }
   }
 
-  void _editComment(Map<String, dynamic> comment) {}
-
   void _deleteComment(Map<String, dynamic> comment) async {
     final commentId = comment['comment_id'];
 
@@ -151,6 +151,48 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
       );
     }
   }
+  void _editComment(Map<String, dynamic> comment) async{
+    final commentId = comment['comment_id'];
+
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'https://makeawish.comsciproject.net/scifoxz/_editComment.php'),
+        body: {
+          'comment_id': commentId.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        if (responseData['success']) {
+          setState(() {
+            comments.remove(comment);
+            Navigator.of(context).pop();
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('ไม่สามารถลบความคิดเห็นได้'),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('เกิดข้อผิดพลาดในการส่งคำขอหรือตอบสนอง: $e'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,13 +200,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     const double largeScreenWidth = 600;
     Uint8List imageBytes = base64Decode(widget.placeData['place_image']);
 
-    double rating = 0.0;
-
-    if (widget.placeData['average_rating'] != null) {
-
-      rating = double.tryParse(widget.placeData['average_rating'].toString() ?? '0') ?? 0.0;
-    }
-
+    double rating = widget.placeData['average_rating'];
+    String formattedRating = rating.toStringAsFixed(1);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -301,8 +338,8 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                           children: [
                             Icon(Icons.star, color: AppColors.mainColor),
                             SizedBox(width: 8),
-                            Text((widget.placeData['average_rating'].toString() != null)
-                                ? (double.tryParse(widget.placeData['average_rating'].toString() ?? '0') ?? 0).toString()
+                            Text((formattedRating != null)
+                                ? (double.tryParse(formattedRating ?? '0') ?? 0).toString()
                                 : '0')
                           ],
                         ),
@@ -404,15 +441,15 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                           itemCount: comments.length,
                           itemBuilder: (context, index) {
                             final comment = comments[index];
-                            if (comment['place_id'] ==
-                                widget.placeData['place_id']) {
+                            if (comment['place_id'] == widget.placeData['place_id']) {
                               String dateString = comment['created_at'];
                               DateTime dateTime = DateTime.parse(dateString);
                               return GestureDetector(
                                 onTap: () {
-                                  _navigateToPlaceDetails(context, comment);
+                                  // _navigateToPlaceDetails(context, comment);
                                 },
                                 child: CommentWidget(
+                                  commentId: comment['comment_id'],
                                   userAvatar: comment['comment_profile'],
                                   userName: comment['comment_username'],
                                   userRating:
@@ -423,7 +460,9 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                                   image: comment['comment_images'],
                                   isUserComment: comment['user_id'] == userId,
                                   onEditComment: () {
-                                    _editComment(comment);
+                                    setState(() {
+                                      _editComment(comment);
+                                    });
                                   },
                                   onDeleteComment: () {
                                     _deleteComment(comment);
@@ -437,9 +476,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Get.to(CommentPage(
-                              context: context,
-                            ));
+                            Get.to(CommentPage(context: context,));
                           },
                           child: Container(
                             height: 70,

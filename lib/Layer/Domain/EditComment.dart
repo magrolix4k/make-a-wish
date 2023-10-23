@@ -6,25 +6,21 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/colors.dart';
-import 'api_connection.dart';
+import '../widgets/colors.dart';
+import '../data/api_connection.dart';
 
-class CommentPage extends StatefulWidget {
+class EditCommentPage extends StatefulWidget {
   final String? currentUsername;
   final String? currentPlace;
   final BuildContext context;
 
-  const CommentPage(
-      {Key? key,
-      this.currentUsername,
-      this.currentPlace,
-      required this.context});
+  const EditCommentPage({Key? key, this.currentUsername, this.currentPlace, required this.context});
 
   @override
-  _CommentPageState createState() => _CommentPageState();
+  _EditCommentPageState createState() => _EditCommentPageState();
 }
 
-class _CommentPageState extends State<CommentPage> {
+class _EditCommentPageState extends State<EditCommentPage> {
   TextEditingController _commentController = TextEditingController();
   double _userRating = 0;
   String? _selectedImage;
@@ -43,6 +39,7 @@ class _CommentPageState extends State<CommentPage> {
   void initState() {
     super.initState();
     getUsername();
+    fetchCommentData();
   }
 
   void getUsername() async {
@@ -82,8 +79,10 @@ class _CommentPageState extends State<CommentPage> {
         if (response.statusCode == 200) {
           if (res['success'] == true) {
             print('Success');
-            Future.delayed(Duration(milliseconds: 1000), () {
-              Navigator.pop(context);
+            setState(() {
+              Future.delayed(Duration(milliseconds: 1000), () {
+                Navigator.pop(context);
+              });
             });
           } else {
             print('Not Success');
@@ -206,7 +205,7 @@ class _CommentPageState extends State<CommentPage> {
             borderSide: BorderSide.none,
           ),
           contentPadding:
-              EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         ),
       ),
     );
@@ -217,7 +216,7 @@ class _CommentPageState extends State<CommentPage> {
     return Row(
       children: List.generate(
         5,
-        (index) => GestureDetector(
+            (index) => GestureDetector(
           onTap: () {
             setState(() {
               _userRating = index + 1.toDouble();
@@ -239,8 +238,8 @@ class _CommentPageState extends State<CommentPage> {
 
   Widget _buildSubmitButton() {
     return ElevatedButton(
-      onPressed: () {
-        fetchCommentData();
+      onPressed: () async {
+        await fetchCommentData();
       },
       child: Text('ส่งความคิดเห็น'),
     );

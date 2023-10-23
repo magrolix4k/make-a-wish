@@ -8,8 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../main.dart';
-import '../user/register.dart';
-import '../utils/colors.dart';
+import '../Domain/Register.dart';
+import '../widgets/colors.dart';
 
 class LoginPage extends StatefulWidget {
   @override

@@ -1,13 +1,18 @@
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CommentWidget extends StatelessWidget {
+
   final String userAvatar;
   final String userName;
   final int userRating;
   final String commentText;
   final String commentTime;
+  final String commentId;
   final String image;
   final bool isUserComment;
   final Function() onEditComment;
@@ -19,6 +24,7 @@ class CommentWidget extends StatelessWidget {
     required this.userRating,
     required this.commentText,
     required this.commentTime,
+    required this.commentId,
     required this.image,
     required this.isUserComment,
     required this.onEditComment,
@@ -27,6 +33,7 @@ class CommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -88,7 +95,9 @@ class CommentWidget extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.edit),
-                onPressed: onEditComment, // เรียกใช้งานฟังก์ชันแก้ไขความคิดเห็น
+                onPressed: () {
+                  _editComment(context);
+                },
               ),
               IconButton(
                 icon: Icon(Icons.delete),
@@ -130,5 +139,127 @@ class CommentWidget extends StatelessWidget {
         );
       },
     );
+  }
+  void _editComment(BuildContext context) {
+    String commentids = commentId;
+    String newCommentText = commentText;
+    double newUserRating = userRating.toDouble();
+    print(commentids);
+
+    File? _imagepath;
+    String? _imagename;
+    String? _imagedata;
+
+    ImagePicker imagePicker = ImagePicker();
+
+    Future<void> _pickImage() async {
+      var pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+      if (pickedImage != null) {
+          _imagepath = File(pickedImage.path);
+          _imagename = pickedImage.path.split('/').last;
+          _imagedata = base64Encode(_imagepath!.readAsBytesSync());
+
+        print(_imagepath);
+        print(_imagename);
+        print(_imagedata);
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('แก้ไขความคิดเห็น'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  initialValue: newCommentText,
+                  onChanged: (text) {
+                    newCommentText = text;
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _pickImage();
+                  },
+                  child: Text('เลือกรูปภาพ'),
+                ),
+                RatingBar.builder(
+                  initialRating: newUserRating.toDouble(),
+                  minRating: 1,
+                  itemSize: 20,
+                  direction: Axis.horizontal,
+                  allowHalfRating: false,
+                  itemCount: 5,
+                  itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
+                  itemBuilder: (context, _) => Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  onRatingUpdate: (rating) {
+                    newUserRating = rating;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด dialog
+              },
+              child: Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                _sendEditCommentRequest(commentids, newCommentText, _imagedata!,_imagename!, newUserRating);
+
+                Navigator.of(context).pop(); // ปิด dialog
+              },
+              child: Text('บันทึก'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  Future<void> _sendEditCommentRequest(String commentids, String newCommentText, String newImage,String _imagename, double newUserRating) async {
+    try {
+      final url = Uri.parse('https://makeawish.comsciproject.net/scifoxz/_editComment.php');
+      DateTime currentTime = DateTime.now();
+      String timestamp = currentTime.toIso8601String();
+
+      var response = await http.post(url, body: {
+        'comment_id' : commentids,
+        'comment_text': newCommentText,
+        'comment_timestamp': timestamp,
+        'comment_image': newImage,
+        'imageName' : _imagename,
+        'comment_rating': newUserRating.toString(),
+      });
+
+      print('comment_id' + commentids);
+      print('comment_text' + newCommentText);
+      print('comment_timestamp' + timestamp);
+      print('imageName' + _imagename);
+      print('imageName' + newImage);
+      print('comment_rating' + newUserRating.toString());
+
+      var res = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        if (res['success'] == true) {
+          print('Success');
+        } else {
+          print('Not Success');
+        }
+      }else{
+        print('Cant Connect');
+      }
+    }catch (e) {
+      print("Exception: $e");
+    }
   }
 }

@@ -8,9 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Domain/Login.dart';
 import '../data/api_connection.dart';
-import '../user/login.dart';
-import '../utils/colors.dart';
+import '../widgets/colors.dart';
 import '../widgets/ReuseableText.dart';
 import '../Domain/EditProfilePage.dart';
 
@@ -125,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () => _handleLogout(context),
+                            onTap: () => _showLogOutConfirmationDialog(),
                             child: Container(
                               width: screenWidth * 0.1,
                               height: screenWidth * 0.1,
@@ -199,6 +199,31 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
+    );
+  }
+  void _showLogOutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('ยืนยันออกจากระบบ'),
+          content: Text('คุณแน่ใจหรือไม่ที่ต้องการออกจากระบบ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                _handleLogout(context);
+              },
+              child: Text('ลบ'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
