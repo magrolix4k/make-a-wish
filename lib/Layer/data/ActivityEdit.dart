@@ -3,7 +3,9 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import '../Domain/ActivityDetailsPage.dart';
 import '../widgets/colors.dart';
 import '../widgets/ReuseableText.dart';
 
@@ -40,10 +42,11 @@ class _EditActivityState extends State<EditActivity> {
       'activity_detail': editActivityDetail,
       'activity_status': selectedActivityStatus.toString(),
     });
-
     if (response.statusCode == 200) {
       print('Activity updated successfully');
-      Navigator.pop(context);
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        Get.to(ActivityDetailsPage(ActivityData: widget.ActivityData,));
+      });
     } else {
       print('Failed to update activity');
     }

@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-import '../widgets/colors.dart';
+import '../Data/ActivityEdit.dart';
 import '../widgets/ReuseableText.dart';
-import 'ActivityEdit.dart';
-
+import '../widgets/colors.dart';
 
 class ActivityDetailsPage extends StatefulWidget {
   final Map<String, dynamic> ActivityData;

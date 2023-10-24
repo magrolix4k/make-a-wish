@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:provider/provider.dart';
 import '../data/api_connection.dart';
 import '../widgets/ReuseableText.dart';
 import 'PlaceDetailsPage.dart';
@@ -21,10 +21,11 @@ class _DashboardPageState extends State<DashboardPage> {
   List<dynamic> dataFromDatabase = [];
   List<dynamic> dataFromPreferences = [];
   List<dynamic> comments = [];
+  List<dynamic> initialDataFromPreferences = [];
+
   String selectedNameHoly = 'เทพทั้งหมด';
   String selectedProvince = 'จังหวัดทั้งหมด';
   String selectedSupport = 'หมวดหมู่ทั้งหมด';
-  List<dynamic> initialDataFromPreferences = [];
 
   String? username;
   String? profile;
@@ -33,18 +34,13 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    getUsername();
     refreshData();
   }
 
   Future<void> refreshData() async {
-    if (dataFromDatabase.isEmpty) {
-      CircularProgressIndicator();
-      return Future.delayed(Duration(seconds: 1)); // Simulated loading
-    }
-
     await fetchDataFromDatabase();
     await CachedData();
-    await getUsername();
   }
 
 
@@ -58,6 +54,8 @@ class _DashboardPageState extends State<DashboardPage> {
         initialDataFromPreferences = List.from(dataFromPreferences);
         updateDataWithAverageRatings();
       });
+    } else {
+      fetchDataFromDatabase();
     }
   }
 
@@ -72,17 +70,6 @@ class _DashboardPageState extends State<DashboardPage> {
         profile = savedImage;
         userId = savedUserId;
       });
-      final jsonData = prefs.getString('dashboard_data');
-      if (jsonData != null) {
-        final List<dynamic> cachedData = jsonDecode(jsonData);
-        setState(() {
-          dataFromPreferences = cachedData;
-          initialDataFromPreferences = List.from(dataFromPreferences);
-          updateDataWithAverageRatings();
-        });
-      } else {
-        fetchDataFromDatabase();
-      }
       fetchDataFromComments();
     }
   }
@@ -119,11 +106,13 @@ class _DashboardPageState extends State<DashboardPage> {
       print('ไม่สามารถดึงข้อมูลความคิดเห็นได้ รหัสสถานะ: ${response.statusCode}');
     }
   }
+
   Future<void> saveDataToSharedPreferences(List<dynamic> data) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonData = jsonEncode(data);
     await prefs.setString('dashboard_data', jsonData);
   }
+
   void updateDataWithAverageRatings() {
     for (var item in dataFromPreferences) {
       final String placeId = item['place_id'];
@@ -133,14 +122,12 @@ class _DashboardPageState extends State<DashboardPage> {
       });
     }
   }
-
   double calculateAverageRating(String placeId) {
     final ratingsForPlace = comments.where((comment) => comment['place_id'] == placeId);
 
     if (ratingsForPlace.isEmpty) {
       return 0.0;
     }
-
     final totalRating = ratingsForPlace.fold(0, (sum, comment) {
       final int rating = int.tryParse(comment['comment_rating'].toString()) ?? 0;
       return sum + rating;
@@ -160,19 +147,19 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     if (selectedNameHoly != 'เทพทั้งหมด') {
-      dataFromPreferences =
-          dataFromPreferences.where((item) => item['place_nameHoly'] ==
-              selectedNameHoly).toList();
+      dataFromPreferences = dataFromPreferences
+          .where((item) => item['place_nameHoly'] == selectedNameHoly)
+          .toList();
     }
     if (selectedProvince != 'จังหวัดทั้งหมด') {
-      dataFromPreferences =
-          dataFromPreferences.where((item) => item['place_province'] ==
-              selectedProvince).toList();
+      dataFromPreferences = dataFromPreferences
+          .where((item) => item['place_province'] == selectedProvince)
+          .toList();
     }
     if (selectedSupport != 'หมวดหมู่ทั้งหมด') {
-      dataFromPreferences =
-          dataFromPreferences.where((item) => item['place_support'] ==
-              selectedSupport).toList();
+      dataFromPreferences = dataFromPreferences
+          .where((item) => item['place_support'] == selectedSupport)
+          .toList();
     }
   }
 
@@ -388,16 +375,16 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-          ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: dataFromPreferences.length,
-            itemBuilder: (context, index) {
-              Map<String, dynamic> item = dataFromPreferences[index];
-              print(item.length);
-              return buildPlaceItem(item, screenWidth);
-            },
-          ),
+          if (dataFromPreferences.isNotEmpty)
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: dataFromPreferences.length,
+              itemBuilder: (context, index) {
+                Map<String, dynamic> item = dataFromPreferences[index];
+                return buildPlaceItem(item, screenWidth);
+              },
+            ),
         ],
       ),
     );

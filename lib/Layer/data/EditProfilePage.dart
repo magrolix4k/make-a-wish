@@ -9,10 +9,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/api_connection.dart';
-import '../widgets/colors.dart';
-import '../widgets/ReuseableText.dart';
 import '../Presentation/ProfilePage.dart';
+import '../widgets/ReuseableText.dart';
+import '../widgets/colors.dart';
+import 'api_connection.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String? currentUsername;
@@ -32,6 +32,7 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _birthdateController = TextEditingController();
   final TextEditingController _birthdayController = TextEditingController();
 
   File? _imagepath;
@@ -96,7 +97,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
     }
   }
-
   Future<void> _pickBirthdate() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -104,15 +104,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-
     if (pickedDate != null) {
       String formattedDate = DateFormat('yyyy/MM/dd').format(pickedDate);
+
+      String day = DateFormat('dd').format(pickedDate);
+      String month = DateFormat('MM').format(pickedDate);
+      String yearBE = (int.parse(DateFormat('y').format(pickedDate)) + 543).toString();
+      String formattedDates = '$day/$month/$yearBE';
+
       setState(() {
         _birthdayController.text = formattedDate;
+        _birthdateController.text = formattedDates;
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -157,7 +162,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          _updateUserData();
+                          _showConfirmationDialog();
                         },
                         child: Container(
                           width: screenWidth * 0.1,
@@ -213,11 +218,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _birthdayController.text.isNotEmpty
-                                ? _birthdayController.text
+                            _birthdateController.text.isNotEmpty
+                                ? _birthdateController.text
                                 : 'เลือกวันเกิด',
                             style: TextStyle(
-                                color: _birthdayController.text.isNotEmpty
+                                color: _birthdateController.text.isNotEmpty
                                     ? Colors.black
                                     : Colors.grey),
                           ),
@@ -233,6 +238,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ],
         ),
       ),
+    );
+  }
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('ยืนยันการแก้ไขข้อมูล'),
+          content: Text('คุณแน่ใจหรือไม่ที่ต้องการแก้ไขข้อมูล?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                _updateUserData();
+              },
+              child: Text('ตกลง'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
